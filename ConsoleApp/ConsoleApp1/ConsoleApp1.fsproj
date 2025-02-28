@@ -14,8 +14,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="QRCodeHelper.fs" />
     <Compile Include="SecretKeyGenerator.fs" />
-    <Compile Include="TOTP_2.fs" />
     <Compile Include="Svg Helper.fs" />
     <Compile Include="TOTP.fs" />
     <Compile Include="Program.fs" />
