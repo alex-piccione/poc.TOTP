@@ -7,6 +7,10 @@ open System.Text
 let useDefaultIfEmpty value defaultValue =
     if String.IsNullOrWhiteSpace value then defaultValue else value
 
+let askOrDefault (prompt) (defaultValue:string) =
+    match AnsiConsole.Ask<string>($"{prompt} (use \"y\" to use deafault: \"{defaultValue}\")") with
+    | "y" -> defaultValue
+    | input -> input
 
 let GenerateCode (secretKey:string) =
     let bytes = ASCIIEncoding.ASCII.GetBytes(secretKey)
@@ -21,12 +25,10 @@ let CreateNewAuthentication () =
 
     AnsiConsole.MarkupLine $"Secret Key: [yellow bold]{secretKey}[/]"
 
-    let defaultIssuer = "MyApp"
-    let defaultAccount = "user@myapp.com"
-    let issuer = useDefaultIfEmpty (AnsiConsole.Ask<string> $"Issuer (left blank for {defaultIssuer})") defaultIssuer
-    let account = useDefaultIfEmpty (AnsiConsole.Ask<string> $"Account (left blank for {defaultAccount})") defaultAccount
+    let issuer = askOrDefault "Issuer" "MyApp"
+    let account = askOrDefault "Account" "user@myapp.com"
 
-    QRCodeHelper.displayTotpQrCode (secretKey) issuer account
+    QRCodeHelper.displayTotpQrCode secretKey issuer account
 
     GenerateCode secretKey
     
