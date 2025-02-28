@@ -18,4 +18,7 @@ let rec execute () =
     if action <> "Exit" then execute()
      
 
-execute()
+//execute()
+
+for i in 1..10 do 
+    AnsiConsole.MarkupLine $"Key: [yellow]{SecretKeyGenerator.generate_2 (25+i)}[/]"
