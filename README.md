@@ -1,4 +1,4 @@
-# poc.TOTP
+# Time-based One Time Password P.O.C.
 
 POC about Time-based One-Time Password.
 
