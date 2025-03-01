@@ -14,47 +14,30 @@ let askOrDefault (prompt) (defaultValue:string) =
     | input -> input
 
 let rec GenerateCode (secretKey:string) =
-    let bytes = ASCIIEncoding.ASCII.GetBytes(secretKey)
-    let totp = Totp(bytes, 30, OtpHashMode.Sha256)
+    let bytes = Base32Encoding.ToBytes(secretKey)
 
+    let totp = Totp(bytes, 30, OtpHashMode.Sha1)
     let totpNumber = totp.ComputeTotp()
     AnsiConsole.MarkupLine $"TOTP: [yellow bold]{totpNumber}[/]"
-
-    System.Threading.Thread.Sleep(2_000)
-
-    // Is culture influencing hte TOTP ?
-    System.Threading.Thread.CurrentThread.CurrentCulture <- System.Globalization.CultureInfo("en-US")
-    System.Threading.Thread.CurrentThread.CurrentUICulture <- System.Globalization.CultureInfo("en-US")
-    let totpNumber = totp.ComputeTotp()
-    AnsiConsole.MarkupLine $"TOTP: [yellow bold]{totpNumber}[/]"
-
-
-    System.Threading.Thread.Sleep(10_000)
 
     match AnsiConsole.Ask<string> "Continue (y/n)?" with
     | "y" -> GenerateCode secretKey
     | _ -> ()
 
 
-let rec VrifyCode (secretKey:string) =
-    let bytes = ASCIIEncoding.ASCII.GetBytes(secretKey)
-    let totp = Totp(bytes, 30, OtpHashMode.Sha256)
-
+let rec VerifyCode (secretKey:string) =
+    let bytes = Base32Encoding.ToBytes secretKey
+    let totp = Totp(bytes, 30, OtpHashMode.Sha1)
 
     let code = AnsiConsole.Ask "Code:"
-    let matches = totp.VerifyTotp(code, [<Out>] timeStepMatched)
 
-    if matches then AnsiConsole.Markup $"Code matches"
-    else AnsiConsole.Markup $"[red]Code NOT matches[/]"
+    let mutable matchedTimeStep = 0L
+    let matches = totp.VerifyTotp(code, &matchedTimeStep)
 
-    ()
-    //let totpNumber = totp.VerifyTotp DateTime.UtcNow 
-    //AnsiConsole.MarkupLine $"TOTP: [yellow bold]{totpNumber}[/]"
-    //System.Threading.Thread.Sleep(30_000)
+    if matches then AnsiConsole.Markup $"[green]Code matches.[/]"
+    else AnsiConsole.Markup $"[red]Code NOT matches.[/]"
 
-    //match AnsiConsole.Ask<string> "Continue (y/n)?" with
-    //| "y" -> GenerateCode secretKey
-    //| _ -> ()
+    Threading.Thread.Sleep 5_000
 
 
 let CreateNewAuthentication () =

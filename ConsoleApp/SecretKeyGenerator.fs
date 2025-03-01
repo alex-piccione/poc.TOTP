@@ -15,8 +15,11 @@ let generate () =
     let randomBytes = Array.zeroCreate<byte> length
     use rng = RandomNumberGenerator.Create()
     rng.GetBytes(randomBytes)
-       
-    let base32Encode (bytes: byte[]) : string =        
+
+    // this is enough but as exercise/study I leave the custom implementation here
+    //let secretKey = OtpNet.Base32Encoding.ToString randomBytes
+
+    let base32Encode (bytes: byte[]) : string =
         let mutable bitsBuffer = 0 // use a integer as buffer for 32 bits
         let mutable bitIndex = 0 // to keep track of the position
         let mutable result = ""
@@ -51,5 +54,5 @@ let generate () =
             | _ -> 0            // Should never happen
             
         result + String.replicate paddingCount "="
-    
+
     base32Encode randomBytes
